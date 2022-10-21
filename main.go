@@ -10,8 +10,8 @@ import (
 )
 
 type ActionFiled struct {
-	Value map[string]string `json:"value"`
-	Tag   string            `json:"tag"`
+	Value map[string]interface{} `json:"value"`
+	Tag   string                 `json:"tag"`
 }
 
 type ActionRequest struct {
@@ -51,13 +51,14 @@ func main() {
 		json.Unmarshal(jsonData, &actionReq)
 		fiWin := false
 		gikkiWin := false
-		respAnser := ""
-		for k, v := range actionReq.Action.Value {
+		respAnswer := ""
+		respData := actionReq.Action.Value["data"].(string)
+		for k, v := range actionReq.Action.Value["answer"].(map[string]string) {
 			if _, ok := answer[k][string(v[0])]; ok {
 				continue
 			} else if a, ok := answerTable[k][string(v[0])]; ok {
 				if string(v[1:]) == a {
-					respAnser = a
+					respAnswer = a
 					if actionReq.OpenId == fiOpenId {
 						credit["fi"] += 1
 						fiWin = true
@@ -95,7 +96,14 @@ func main() {
 					Tag: "div",
 					Text: &vo.CardElementText{
 						Tag:     "lark_md",
-						Content: "The answer is: " + respAnser,
+						Content: "❓ " + respData,
+					},
+				},
+				vo.CardElementContentModule{
+					Tag: "div",
+					Text: &vo.CardElementText{
+						Tag:     "lark_md",
+						Content: "The answer is: " + respAnswer,
 					},
 				},
 			},
