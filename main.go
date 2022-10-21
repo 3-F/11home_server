@@ -85,6 +85,15 @@ func main() {
 		} else {
 			return
 		}
+		var elements []interface{}
+		json.Unmarshal([]byte(respData), &elements)
+		elements = append(elements, vo.CardElementContentModule{
+			Tag: "div",
+			Text: &vo.CardElementText{
+				Tag:     "lark_md",
+				Content: "The answer is: " + respAnswer,
+			},
+		})
 		ctx.JSON(http.StatusOK, &vo.Card{
 			Config: &vo.CardConfig{
 				WideScreenMode: true,
@@ -96,23 +105,9 @@ func main() {
 					Content: respMsg,
 				},
 			},
-			Elements: []interface{}{
-				vo.CardElementContentModule{
-					Tag: "div",
-					Text: &vo.CardElementText{
-						Tag:     "lark_md",
-						Content: "❓ " + respData,
-					},
-				},
-				vo.CardElementContentModule{
-					Tag: "div",
-					Text: &vo.CardElementText{
-						Tag:     "lark_md",
-						Content: "The answer is: " + respAnswer,
-					},
-				},
-			},
+			Elements: elements,
 		})
 	})
+
 	r.Run(":4488")
 }
