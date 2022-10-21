@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"os"
 
 	"github.com/3-F/feishu-sdk-golang/core/model/vo"
 	"github.com/gin-gonic/gin"
@@ -32,11 +33,18 @@ func main() {
 	r := gin.Default()
 	fiOpenId := "ou_b7dc8d6831dba04bec363734926bf0ea"
 	answerTable := make(map[string]map[string]string)
-	AnswerData, _ := ioutil.ReadFile("./440Answer.json")
-	json.Unmarshal(AnswerData, &answerTable)
+	answerTableData, _ := ioutil.ReadFile("./440Answer.json")
+	json.Unmarshal(answerTableData, &answerTable)
 
+	const answerPath = "./answer.json"
+	answerData, _ := ioutil.ReadFile(answerPath)
 	answer := make(map[string]map[string]struct{})
+	json.Unmarshal(answerData, &answer)
+
+	const creditPath = "./credit.json"
+	creditData, _ := ioutil.ReadFile(creditPath)
 	credit := make(map[string]uint)
+	json.Unmarshal(creditData, &credit)
 
 	r.POST("/feishu", func(ctx *gin.Context) {
 		jsonData, _ := ioutil.ReadAll(ctx.Request.Body)
@@ -85,6 +93,12 @@ func main() {
 		} else {
 			return
 		}
+		// // write back
+		answerRawData, _ := json.Marshal(answer)
+		os.WriteFile(answerPath, answerRawData, 0644)
+		creditRawData, _ := json.Marshal(credit)
+		os.WriteFile(creditPath, creditRawData, 0644)
+
 		ctx.JSON(http.StatusOK, &vo.Card{
 			Config: &vo.CardConfig{
 				WideScreenMode: true,
