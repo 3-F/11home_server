@@ -57,6 +57,9 @@ func main() {
 					"challenge": c,
 				})
 				return
+			} else if v.(string) == "points" {
+				ctx.JSON(http.StatusOK, credit)
+				return
 			}
 		}
 
@@ -131,5 +134,6 @@ func main() {
 			},
 		})
 	})
+
 	r.Run(":4488")
 }
