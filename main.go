@@ -90,7 +90,7 @@ func main() {
 		if fiWin {
 			respMsg = "Fi Win! Point +1"
 		} else if gikkiWin {
-			respMsg = "Gakke Win! Point +1"
+			respMsg = "Gakki Win! Point +1"
 		} else {
 			return
 		}
