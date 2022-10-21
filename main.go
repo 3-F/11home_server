@@ -35,6 +35,18 @@ func main() {
 
 	r.POST("/feishu", func(ctx *gin.Context) {
 		jsonData, _ := ioutil.ReadAll(ctx.Request.Body)
+		var rawData map[string]interface{}
+		json.Unmarshal(jsonData, &rawData)
+		if v, ok := rawData["type"]; ok {
+			if v.(string) == "url_verification" {
+				c := rawData["challenge"].(string)
+				ctx.JSON(http.StatusOK, gin.H{
+					"challenge": c,
+				})
+				return
+			}
+		}
+
 		var actionReq ActionRequest
 		json.Unmarshal(jsonData, &actionReq)
 		fiWin := false
@@ -67,25 +79,23 @@ func main() {
 		} else {
 			return
 		}
-		ctx.JSON(http.StatusOK, gin.H{
-			"body": &vo.Card{
-				Config: &vo.CardConfig{
-					WideScreenMode: true,
+		ctx.JSON(http.StatusOK, &vo.Card{
+			Config: &vo.CardConfig{
+				WideScreenMode: true,
+			},
+			Header: &vo.CardHeader{
+				Template: "purple",
+				Title: &vo.CardHeaderTitle{
+					Tag:     "plain_text",
+					Content: respMsg,
 				},
-				Header: &vo.CardHeader{
-					Template: "purple",
-					Title: &vo.CardHeaderTitle{
-						Tag:     "plain_text",
-						Content: respMsg,
-					},
-				},
-				Elements: []interface{}{
-					vo.CardElementContentModule{
-						Tag: "div",
-						Text: &vo.CardElementText{
-							Tag:     "lark_md",
-							Content: "The answer is: " + respAnser,
-						},
+			},
+			Elements: []interface{}{
+				vo.CardElementContentModule{
+					Tag: "div",
+					Text: &vo.CardElementText{
+						Tag:     "lark_md",
+						Content: "The answer is: " + respAnser,
 					},
 				},
 			},
