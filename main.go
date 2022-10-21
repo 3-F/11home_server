@@ -101,8 +101,11 @@ func main() {
 					Tag: "div",
 					Text: &vo.CardElementText{
 						Tag:     "lark_md",
-						Content: "❓ " + respData,
+						Content: respData,
 					},
+				},
+				vo.CardElementBrModule{
+					Tag: "hr",
 				},
 				vo.CardElementContentModule{
 					Tag: "div",
