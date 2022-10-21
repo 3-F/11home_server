@@ -70,9 +70,7 @@ func main() {
 		respAnswer := ""
 		respData := actionReq.Action.Value.Data
 		for k, v := range actionReq.Action.Value.Answer {
-			if _, ok := answer[k][string(v[0])]; ok {
-				continue
-			} else if a, ok := answerTable[k][string(v[0])]; ok {
+			if a, ok := answerTable[k][string(v[0])]; ok {
 				if string(v[1:]) == a {
 					respAnswer = a
 					if actionReq.OpenId == fiOpenId {
