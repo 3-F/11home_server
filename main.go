@@ -9,9 +9,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type ActionValue struct {
+	Answer map[string]string `json:"answer"`
+	Data   string            `json:"data"`
+}
+
 type ActionFiled struct {
-	Value map[string]interface{} `json:"value"`
-	Tag   string                 `json:"tag"`
+	Value ActionValue `json:"value"`
+	Tag   string      `json:"tag"`
 }
 
 type ActionRequest struct {
@@ -52,8 +57,8 @@ func main() {
 		fiWin := false
 		gikkiWin := false
 		respAnswer := ""
-		respData := actionReq.Action.Value["data"].(string)
-		for k, v := range actionReq.Action.Value["answer"].(map[string]string) {
+		respData := actionReq.Action.Value.Data
+		for k, v := range actionReq.Action.Value.Answer {
 			if _, ok := answer[k][string(v[0])]; ok {
 				continue
 			} else if a, ok := answerTable[k][string(v[0])]; ok {
