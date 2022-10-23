@@ -82,14 +82,16 @@ func main() {
 		respData := actionReq.Action.Value.Data
 
 		for k, v := range actionReq.Action.Value.Answer {
+			respAnswer = string(v[1:])
 			if a, ok := answerTable[k][string(v[0])]; ok {
 				if string(v[1:]) == a {
-					respAnswer = a
-					if _, ok := answer[Fi][k]; actionReq.OpenId == fiOpenId && !ok {
-						answer[Fi][k] = make(map[string]struct{})
-						answer[Fi][k][string(v[0])] = struct{}{}
-						credit[Fi] += 1
-						fiWin = true
+					if actionReq.OpenId == fiOpenId {
+						if _, ok := answer[Fi][k]; !ok {
+							answer[Fi][k] = make(map[string]struct{})
+							answer[Fi][k][string(v[0])] = struct{}{}
+							credit[Fi] += 1
+							fiWin = true
+						}
 					} else if _, ok := answer[Gakki][k]; !ok {
 						answer[Gakki][k] = make(map[string]struct{})
 						answer[Gakki][k][string(v[0])] = struct{}{}
