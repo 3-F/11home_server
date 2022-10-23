@@ -108,7 +108,6 @@ func main() {
 			respMsg = "Gakki Win! Point +1"
 		} else {
 			respMsg = "Ops..."
-			return
 		}
 		// // write back
 		answerRawData, _ := json.Marshal(answer)
