@@ -29,6 +29,11 @@ type ActionRequest struct {
 	Action        ActionFiled `json:"action"`
 }
 
+const (
+	Fi    = "fi"
+	Gakki = "gakki"
+)
+
 func main() {
 	r := gin.Default()
 	fiOpenId := "ou_b7dc8d6831dba04bec363734926bf0ea"
@@ -38,8 +43,14 @@ func main() {
 
 	const answerPath = "./answer.json"
 	answerData, _ := ioutil.ReadFile(answerPath)
-	answer := make(map[string]map[string]struct{})
+	answer := make(map[string]map[string]map[string]struct{})
 	json.Unmarshal(answerData, &answer)
+	if _, ok := answer[Fi]; !ok {
+		answer[Fi] = make(map[string]map[string]struct{})
+	}
+	if _, ok := answer[Gakki]; !ok {
+		answer[Gakki] = make(map[string]map[string]struct{})
+	}
 
 	const creditPath = "./credit.json"
 	creditData, _ := ioutil.ReadFile(creditPath)
@@ -69,19 +80,23 @@ func main() {
 		gikkiWin := false
 		respAnswer := ""
 		respData := actionReq.Action.Value.Data
+
 		for k, v := range actionReq.Action.Value.Answer {
 			if a, ok := answerTable[k][string(v[0])]; ok {
 				if string(v[1:]) == a {
 					respAnswer = a
-					if actionReq.OpenId == fiOpenId {
-						credit["fi"] += 1
+					if _, ok := answer[Fi][k]; actionReq.OpenId == fiOpenId && !ok {
+						answer[Fi][k] = make(map[string]struct{})
+						answer[Fi][k][string(v[0])] = struct{}{}
+						credit[Fi] += 1
 						fiWin = true
-					} else {
-						credit["gakki"] += 1
+					} else if _, ok := answer[Gakki][k]; !ok {
+						answer[Gakki][k] = make(map[string]struct{})
+						answer[Gakki][k][string(v[0])] = struct{}{}
+						credit[Gakki] += 1
 						gikkiWin = true
 					}
-					answer[k] = make(map[string]struct{})
-					answer[k][string(v[0])] = struct{}{}
+
 				}
 
 			}
@@ -92,6 +107,7 @@ func main() {
 		} else if gikkiWin {
 			respMsg = "Gakki Win! Point +1"
 		} else {
+			respMsg = "Ops..."
 			return
 		}
 		// // write back
